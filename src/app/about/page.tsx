@@ -4,13 +4,13 @@ import { motion } from 'framer-motion';
 
 const techStack = [
   'Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Node.js',
-  'Python', 'PostgreSQL', 'MongoDB', 'Docker', 'AWS',
+  'Python', 'PostgreSQL', 'MongoDB', 'Docker',
   'Telegram Bot API', 'WhatsApp API', 'OpenAI API', 'Framer Motion',
 ];
 
 const skills = [
   { name: 'פיתוח Full Stack', level: 95 },
-  { name: 'אוטומציות ובוטים', level: 90 },
+  { name: 'אוטומציות ובוטים', level: 92 },
   { name: 'UI/UX Design', level: 80 },
   { name: 'AI & Machine Learning', level: 75 },
   { name: 'DevOps & Cloud', level: 70 },
@@ -29,10 +29,10 @@ export default function AboutPage() {
           <div className="w-28 h-28 bg-indigo-600/20 border-2 border-indigo-500/50 rounded-full flex items-center justify-center text-5xl mx-auto mb-6">
             👨‍💻
           </div>
-          <h1 className="text-5xl font-extrabold text-white mb-4">אודות DevCraft</h1>
+          <h1 className="text-5xl font-extrabold text-white mb-2">אמיתי</h1>
+          <p className="text-indigo-400 font-semibold text-lg mb-4">Full Stack Developer & Automation Expert</p>
           <p className="text-slate-400 text-xl max-w-2xl mx-auto leading-relaxed">
-            מפתח Full Stack עם תשוקה לפתרונות דיגיטליים חדשניים.
-            מתמחה בבניית מוצרים מהרעיון ועד השקה.
+            מפתח עם תשוקה לפתרונות דיגיטליים שעובדים. בונה אתרים, בוטים ואוטומציות שחוסכות זמן ומכניסות כסף.
           </p>
         </motion.div>
 
@@ -46,17 +46,44 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-white mb-4">הסיפור שלי</h2>
           <div className="text-slate-400 space-y-4 leading-relaxed">
             <p>
-              התחלתי לתכנת לפני מעל 5 שנים, ומאז בניתי עשרות פרויקטים — מאתרים קטנים לעסקים מקומיים
-              ועד מערכות מורכבות עם אינטגרציות AI.
+              התחלתי לתכנת מגיל צעיר מתוך סקרנות טהורה — ומאז זה הפך לקריירה.
+              בניתי עשרות פרויקטים לעסקים ויחידים, מאתרים פשוטים ועד מערכות אוטומציה מורכבות עם אינטגרציות AI.
             </p>
             <p>
-              האמונה שלי היא שטכנולוגיה צריכה לפשט חיים, לא לסבך אותם. לכן אני מתמקד
-              בפתרונות שמביאים תוצאות מדידות — יותר לקוחות, יותר הכנסה, פחות עבודה ידנית.
+              אני מאמין שטכנולוגיה טובה צריכה לעבוד בשקט ברקע ולהביא תוצאות — יותר לקוחות, יותר מכירות, פחות עבודה ידנית.
+              לכן אני מתמקד בפתרונות שמביאים ROI אמיתי ומדיד.
             </p>
             <p>
-              עובד עם עסקים קטנים ובינוניים, סטארטאפים, ויזמים שרוצים להפוך רעיון למציאות מהר.
+              עובד עם עסקים קטנים ובינוניים, יזמים וסטארטאפים שרוצים להפוך רעיון למוצר עובד — מהר ובתקציב הגיוני.
             </p>
           </div>
+        </motion.div>
+
+        {/* Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
+        >
+          {[
+            { value: '50+', label: 'פרויקטים הושלמו' },
+            { value: '40+', label: 'לקוחות מרוצים' },
+            { value: '5+', label: 'שנות ניסיון' },
+            { value: '24h', label: 'זמן מענה מקסימלי' },
+          ].map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-indigo-600/10 border border-indigo-500/20 rounded-2xl p-5 text-center"
+            >
+              <div className="text-3xl font-extrabold text-indigo-400 mb-1">{s.value}</div>
+              <div className="text-slate-500 text-sm">{s.label}</div>
+            </motion.div>
+          ))}
         </motion.div>
 
         {/* Tech stack */}
@@ -73,7 +100,7 @@ export default function AboutPage() {
                 key={tech}
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.05 }}
+                transition={{ delay: i * 0.04 }}
                 viewport={{ once: true }}
                 className="bg-indigo-600/15 border border-indigo-500/30 text-indigo-300 px-4 py-2 rounded-lg text-sm font-medium"
               >
@@ -125,13 +152,13 @@ export default function AboutPage() {
           viewport={{ once: true }}
           className="text-center bg-gradient-to-br from-indigo-600/20 to-purple-600/10 border border-indigo-500/30 rounded-2xl p-8"
         >
-          <h3 className="text-2xl font-bold text-white mb-3">בוא נעבוד יחד</h3>
-          <p className="text-slate-400 mb-6">מוכן לשמוע על הפרויקט שלך</p>
+          <h3 className="text-2xl font-bold text-white mb-3">בוא נעבוד יחד 🤝</h3>
+          <p className="text-slate-400 mb-6">מוכן לשמוע על הפרויקט שלך ולמצוא את הפתרון המתאים</p>
           <a
             href="/contact"
             className="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-3 rounded-xl transition-colors"
           >
-            צור קשר
+            צור קשר עכשיו
           </a>
         </motion.div>
       </div>

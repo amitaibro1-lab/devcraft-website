@@ -57,10 +57,10 @@ export default function HomePage() {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="text-5xl md:text-7xl font-extrabold leading-tight mb-6"
           >
-            פתרונות דיגיטל{' '}
-            <span className="gradient-text">מתקדמים</span>
+            אני בונה דברים{' '}
+            <span className="gradient-text">שעובדים</span>
             <br />
-            שמביאים תוצאות
+            ומביאים תוצאות
           </motion.h1>
 
           <motion.p
@@ -69,8 +69,8 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            אתרים, דפי נחיתה, אוטומציות ובוטים חכמים — הכל תחת קורף אחד.
-            מהרעיון ועד השקה בזמן שיא.
+            אתרים, דפי נחיתה, אוטומציות ובוטים חכמים — הכל ממני, אמיתי.
+            מהרעיון ועד השקה בזמן שיא ובתקציב הגיוני.
           </motion.p>
 
           <motion.div
@@ -161,7 +161,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-white/5 py-8 px-4 text-center text-slate-600 text-sm">
-        © {new Date().getFullYear()} DevCraft. כל הזכויות שמורות.
+        © {new Date().getFullYear()} AmitaiCraft. כל הזכויות שמורות.
       </footer>
     </div>
   );

@@ -3,7 +3,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
-  title: 'DevCraft — פתרונות דיגיטל מתקדמים',
+  title: 'AmitaiCraft — פתרונות דיגיטל מתקדמים',
   description: 'בניית אתרים, דפי נחיתה, אוטומציות ובוטים חכמים',
 };
 

@@ -79,7 +79,7 @@ export async function sendPaymentConfirmationEmails(data: {
           <p><strong>תאריך:</strong> ${date}</p>
         </div>
         <p style="font-size:18px; color:#6366f1; font-weight:bold;">ניצור איתך קשר תוך 24 שעות 🚀</p>
-        <p>בברכה,<br>צוות DevCraft</p>
+        <p>בברכה,<br>צוות AmitaiCraft</p>
       </div>
     `,
   });

@@ -21,7 +21,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f0f1a]/80 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
-        <Link href="/" className="text-xl font-bold gradient-text">DevCraft</Link>
+        <Link href="/" className="text-xl font-bold gradient-text">AmitaiCraft</Link>
 
         {/* Desktop links */}
         <ul className="hidden md:flex gap-6">
