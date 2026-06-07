@@ -29,6 +29,8 @@ export default function MentorSubscribers({ password }: Props) {
   const [form, setForm] = useState({ name: '', email: '', plan: 'Starter', days: 30 });
   const [newToken, setNewToken] = useState('');
   const [copied, setCopied] = useState(false);
+  const [grantError, setGrantError] = useState('');
+  const [granting, setGranting] = useState(false);
 
   const headers = {
     'Content-Type': 'application/json',
@@ -37,26 +39,40 @@ export default function MentorSubscribers({ password }: Props) {
 
   const load = async () => {
     setLoading(true);
-    const res = await fetch('/api/mentor/grant', { headers });
-    if (res.ok) setSubscribers(await res.json());
+    try {
+      const res = await fetch('/api/mentor/grant', { headers: { 'x-admin-password': password } });
+      if (res.ok) setSubscribers(await res.json());
+    } catch (e) {
+      console.error('load error', e);
+    }
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [password]);
 
   const grantAccess = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/mentor/grant', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(form),
-    });
-    const data = await res.json();
-    if (data.token) {
-      setNewToken(data.token);
-      setForm({ name: '', email: '', plan: 'Starter', days: 30 });
-      load();
+    setGrantError('');
+    setGranting(true);
+    try {
+      const res = await fetch('/api/mentor/grant', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (data.token) {
+        setNewToken(data.token);
+        setForm({ name: '', email: '', plan: 'Starter', days: 30 });
+        load();
+      } else {
+        setGrantError(data.error ?? `שגיאה (${res.status})`);
+      }
+    } catch (e) {
+      setGrantError('שגיאת חיבור — בדוק את הקונסול');
+      console.error(e);
     }
+    setGranting(false);
   };
 
   const toggleActive = async (token: string, active: boolean) => {
@@ -161,11 +177,18 @@ export default function MentorSubscribers({ password }: Props) {
           />
           <button
             type="submit"
-            className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-xl text-sm transition-colors"
+            disabled={granting}
+            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold py-2 rounded-xl text-sm transition-colors"
           >
-            צור גישה
+            {granting ? 'יוצר...' : 'צור גישה'}
           </button>
         </form>
+
+        {grantError && (
+          <div className="mt-3 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+            <p className="text-red-400 text-sm">⚠️ {grantError}</p>
+          </div>
+        )}
 
         {newToken && (
           <div className="mt-4 bg-green-600/10 border border-green-500/30 rounded-xl p-4">
