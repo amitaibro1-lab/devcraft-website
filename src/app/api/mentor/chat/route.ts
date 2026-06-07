@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY?.replace(/^﻿/, '').trim();
   if (!apiKey) {
     console.error('[chat] ANTHROPIC_API_KEY not set');
     return NextResponse.json({ error: 'AI not configured' }, { status: 500 });
@@ -87,10 +87,8 @@ export async function POST(req: NextRequest) {
       }
     }
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    const stack = err instanceof Error ? err.stack : '';
-    console.error('[chat] Anthropic error:', msg, '|STACK|', stack?.slice(0, 300));
-    return NextResponse.json({ error: 'AI error', detail: msg }, { status: 500 });
+    console.error('[chat] Anthropic error:', err instanceof Error ? err.message : String(err));
+    return NextResponse.json({ error: 'AI error' }, { status: 500 });
   }
 
   // Return as SSE stream so the frontend reader works unchanged
