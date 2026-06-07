@@ -14,18 +14,18 @@ interface Subscriber {
 }
 
 function isKvAvailable() {
-  return !!process.env.UPSTASH_REDIS_REST_URL;
+  return !!process.env.KV_REST_API_URL;
 }
 
-async function getRedis() {
-  const { Redis } = await import('@upstash/redis');
-  return Redis.fromEnv();
+async function getKv() {
+  const { kv } = await import('@vercel/kv');
+  return kv;
 }
 
 export async function getSubscribers(): Promise<Subscriber[]> {
   if (isKvAvailable()) {
-    const redis = await getRedis();
-    const data = await redis.get<Subscriber[]>(KV_KEY);
+    const kv = await getKv();
+    const data = await kv.get<Subscriber[]>(KV_KEY);
     return data ?? [];
   }
   return readJSON<Subscriber[]>('mentor-subscribers.json');
@@ -33,8 +33,8 @@ export async function getSubscribers(): Promise<Subscriber[]> {
 
 export async function saveSubscribers(subscribers: Subscriber[]): Promise<void> {
   if (isKvAvailable()) {
-    const redis = await getRedis();
-    await redis.set(KV_KEY, subscribers);
+    const kv = await getKv();
+    await kv.set(KV_KEY, subscribers);
     return;
   }
   writeJSON('mentor-subscribers.json', subscribers);
