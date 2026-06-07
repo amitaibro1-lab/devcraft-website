@@ -1,19 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { cookies } from 'next/headers';
-import { readJSON } from '@/lib/db';
+import { getSubscribers } from '@/lib/mentor-db';
 
 export const dynamic = 'force-dynamic';
-
-interface Subscriber {
-  token: string;
-  name: string;
-  email: string;
-  plan: string;
-  createdAt: string;
-  expiresAt: string;
-  active: boolean;
-}
 
 const SYSTEM_PROMPT = `אתה המנטור האישי של הלומד — מורה טכני, יועץ עסקי, מאמן למידה וארכיטקט מערכות AI.
 המשימה שלך היא להפוך אותו לאופרטור AI שיודע לבנות, להשיק ולהרוויח ממערכות AI.
@@ -47,7 +37,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const subscribers = readJSON<Subscriber[]>('mentor-subscribers.json');
+  const subscribers = await getSubscribers();
   const sub = subscribers.find((s) => s.token === token && s.active);
 
   if (!sub) {
