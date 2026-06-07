@@ -32,6 +32,53 @@ export async function sendContactEmail(data: {
   });
 }
 
+export async function sendMentorAccessEmail(data: {
+  customerName: string;
+  customerEmail: string;
+  plan: string;
+  token: string;
+  siteUrl: string;
+}) {
+  const { customerName, customerEmail, plan, token, siteUrl } = data;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: customerEmail,
+    subject: `קוד הגישה שלך ל-AI Master Mentor 🧠`,
+    html: `
+      <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f0f1a; color: #f1f5f9; padding: 32px; border-radius: 16px;">
+        <h1 style="color: #818cf8; margin-bottom: 8px;">🧠 AI Master Mentor</h1>
+        <p style="font-size: 18px;">שלום ${customerName}! ברוך הבא לתוכנית <strong style="color: #818cf8;">${plan}</strong></p>
+
+        <p>קוד הגישה שלך מוכן. שמור אותו — תצטרך אותו בכל כניסה:</p>
+
+        <div style="background: #1e1e2e; border: 1px solid #6366f1; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
+          <p style="color: #94a3b8; font-size: 12px; margin: 0 0 8px;">קוד הגישה שלך</p>
+          <code style="font-size: 18px; color: #818cf8; letter-spacing: 2px; font-weight: bold;">${token}</code>
+        </div>
+
+        <a href="${siteUrl}/mentor" style="display: inline-block; background: #6366f1; color: white; font-weight: bold; padding: 14px 32px; border-radius: 12px; text-decoration: none; font-size: 16px;">
+          כניסה למנטור ←
+        </a>
+
+        <hr style="border: none; border-top: 1px solid #1e1e2e; margin: 32px 0;" />
+        <p style="color: #475569; font-size: 13px;">
+          תוכנית: ${plan} · בברכה, AmitaiCraft<br>
+          שמור את הקוד הזה — תצטרך אותו בכל כניסה.
+        </p>
+      </div>
+    `,
+  });
+
+  // notify admin
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER,
+    subject: `🧠 מנוי מנטור חדש — ${customerName} (${plan})`,
+    html: `<div dir="rtl"><p>לקוח: ${customerName}</p><p>אימייל: ${customerEmail}</p><p>תוכנית: ${plan}</p><p>טוקן: ${token}</p></div>`,
+  });
+}
+
 export async function sendPaymentConfirmationEmails(data: {
   customerName: string;
   customerEmail: string;

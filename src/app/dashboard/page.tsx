@@ -7,6 +7,7 @@ import InquiriesBarChart from '@/components/dashboard/BarChart';
 import InquiryRow from '@/components/dashboard/InquiryRow';
 import PaymentsTable from '@/components/dashboard/PaymentsTable';
 import ServiceEditor from '@/components/dashboard/ServiceEditor';
+import MentorSubscribers from '@/components/dashboard/MentorSubscribers';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Inquiry {
@@ -60,11 +61,12 @@ const TABS = [
   { id: 'inquiries', label: 'פניות', icon: '💬' },
   { id: 'payments', label: 'תשלומים', icon: '💳' },
   { id: 'services', label: 'שירותים ומחירים', icon: '🛠️' },
+  { id: 'mentor', label: 'מנויי מנטור', icon: '🧠' },
   { id: 'settings', label: 'הגדרות', icon: '⚙️' },
 ];
 
 // ─── Login screen ─────────────────────────────────────────────────────────────
-function LoginScreen({ onLogin }: { onLogin: () => void }) {
+function LoginScreen({ onLogin }: { onLogin: (password: string) => void }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -79,7 +81,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
       body: JSON.stringify({ password }),
     });
     if (res.ok) {
-      onLogin();
+      onLogin(password);
     } else {
       setError('סיסמה שגויה');
     }
@@ -123,6 +125,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 // ─── Main dashboard ───────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const [authed, setAuthed] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -240,7 +243,7 @@ export default function DashboardPage() {
     }, {} as Record<string, number>)
   ).map(([service, count]) => ({ service, count }));
 
-  if (!authed) return <LoginScreen onLogin={() => setAuthed(true)} />;
+  if (!authed) return <LoginScreen onLogin={(pw) => { setAuthed(true); setAdminPassword(pw); }} />;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -404,6 +407,13 @@ export default function DashboardPage() {
                 >
                   + הוסף שירות חדש
                 </button>
+              </motion.div>
+            )}
+
+            {/* ── Mentor subscribers ─────────────────────────────────────────── */}
+            {activeTab === 'mentor' && (
+              <motion.div key="mentor" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <MentorSubscribers password={adminPassword} />
               </motion.div>
             )}
 

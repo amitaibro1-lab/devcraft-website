@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.102.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/nodemailer": "^8.0.0",
     "canvas-confetti": "^1.9.4",
