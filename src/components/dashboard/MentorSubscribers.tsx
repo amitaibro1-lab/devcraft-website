@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Subscriber {
   token: string;
@@ -23,32 +23,39 @@ const PLAN_COLORS: Record<string, string> = {
 };
 
 export default function MentorSubscribers({ password }: Props) {
+  const passwordRef = useRef(password);
+  useEffect(() => { passwordRef.current = password; }, [password]);
+
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
-  const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', plan: 'Starter', days: 30 });
   const [newToken, setNewToken] = useState('');
   const [copied, setCopied] = useState(false);
   const [grantError, setGrantError] = useState('');
   const [granting, setGranting] = useState(false);
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-admin-password': password,
-  };
+  function adminHeaders(json = false) {
+    const h: Record<string, string> = { 'x-admin-password': passwordRef.current };
+    if (json) h['Content-Type'] = 'application/json';
+    return h;
+  }
 
   const load = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/mentor/grant', { headers: { 'x-admin-password': password } });
-      if (res.ok) setSubscribers(await res.json());
+      const res = await fetch('/api/mentor/grant', { headers: adminHeaders() });
+      if (res.ok) {
+        setSubscribers(await res.json());
+      } else {
+        console.error('load failed', res.status, await res.text());
+      }
     } catch (e) {
       console.error('load error', e);
     }
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, [password]);
+  useEffect(() => { load(); }, []);
 
   const grantAccess = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +64,7 @@ export default function MentorSubscribers({ password }: Props) {
     try {
       const res = await fetch('/api/mentor/grant', {
         method: 'POST',
-        headers,
+        headers: adminHeaders(true),
         body: JSON.stringify(form),
       });
       const data = await res.json();
@@ -66,10 +73,10 @@ export default function MentorSubscribers({ password }: Props) {
         setForm({ name: '', email: '', plan: 'Starter', days: 30 });
         load();
       } else {
-        setGrantError(data.error ?? `שגיאה (${res.status})`);
+        setGrantError(data.error ?? `שגיאה ${res.status}`);
       }
     } catch (e) {
-      setGrantError('שגיאת חיבור — בדוק את הקונסול');
+      setGrantError('שגיאת חיבור');
       console.error(e);
     }
     setGranting(false);
@@ -78,7 +85,7 @@ export default function MentorSubscribers({ password }: Props) {
   const toggleActive = async (token: string, active: boolean) => {
     await fetch('/api/mentor/grant', {
       method: 'PATCH',
-      headers,
+      headers: adminHeaders(true),
       body: JSON.stringify({ token, active }),
     });
     load();
@@ -87,7 +94,7 @@ export default function MentorSubscribers({ password }: Props) {
   const extendAccess = async (token: string) => {
     await fetch('/api/mentor/grant', {
       method: 'PATCH',
-      headers,
+      headers: adminHeaders(true),
       body: JSON.stringify({ token, extendDays: 30 }),
     });
     load();
@@ -97,7 +104,7 @@ export default function MentorSubscribers({ password }: Props) {
     if (!confirm('למחוק את המנוי?')) return;
     await fetch('/api/mentor/grant', {
       method: 'DELETE',
-      headers,
+      headers: adminHeaders(true),
       body: JSON.stringify({ token }),
     });
     load();
