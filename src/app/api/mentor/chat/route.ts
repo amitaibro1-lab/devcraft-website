@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { getSubscribers } from '@/lib/mentor-db';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 const SYSTEM_PROMPT = `אתה המנטור האישי של הלומד — מורה טכני, יועץ עסקי, מאמן למידה וארכיטקט מערכות AI.
 המשימה שלך היא להפוך אותו לאופרטור AI שיודע לבנות, להשיק ולהרוויח ממערכות AI.

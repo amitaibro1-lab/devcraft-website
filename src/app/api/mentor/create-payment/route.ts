@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createGrowPaymentLink } from '@/lib/grow';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 const PLAN_PRICES: Record<string, number> = {
   Starter: 49,

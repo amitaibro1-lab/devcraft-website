@@ -5,6 +5,7 @@ import { verifyGrowWebhook, planFromAmount } from '@/lib/grow';
 import { sendMentorAccessEmail } from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   let payload: Record<string, string> = {};

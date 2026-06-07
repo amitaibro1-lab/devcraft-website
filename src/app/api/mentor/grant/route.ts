@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { getSubscribers, saveSubscribers, addSubscriber } from '@/lib/mentor-db';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 function requireAdmin(req: NextRequest): boolean {
   const password = req.headers.get('x-admin-password') ?? '';

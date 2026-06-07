@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { getSubscribers } from '@/lib/mentor-db';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   const { code } = await req.json();
