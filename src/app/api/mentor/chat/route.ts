@@ -30,6 +30,7 @@ const SYSTEM_PROMPT = `אתה המנטור האישי של הלומד — מור
 המסלול: Agency (כסף מהיר) → SaaS (הכנסה חוזרת) → Company (חברה).`;
 
 export async function POST(req: NextRequest) {
+  // Auth check
   const cookieStore = await cookies();
   const token = cookieStore.get('mentor_token')?.value;
 
@@ -37,7 +38,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const subscribers = await getSubscribers();
+  let subscribers;
+  try {
+    subscribers = await getSubscribers();
+  } catch (err) {
+    console.error('[chat] getSubscribers failed:', err);
+    return NextResponse.json({ error: 'Storage error' }, { status: 500 });
+  }
+
   const sub = subscribers.find((s) => s.token === token && s.active);
 
   if (!sub) {
@@ -48,38 +56,61 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Subscription expired' }, { status: 403 });
   }
 
-  const { messages } = await req.json();
+  let messages: { role: string; content: string }[];
+  try {
+    const body = await req.json();
+    messages = body.messages;
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
 
-  if (!messages || !Array.isArray(messages)) {
+  if (!messages || !Array.isArray(messages) || messages.length === 0) {
     return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
   }
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    console.error('[chat] ANTHROPIC_API_KEY not set');
+    return NextResponse.json({ error: 'AI not configured' }, { status: 500 });
+  }
 
+  const client = new Anthropic({ apiKey });
+  const encoder = new TextEncoder();
+
+  // Use pull-based ReadableStream (more reliable in Next.js App Router)
+  async function* generateStream() {
+    const anthropicStream = client.messages.stream({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4096,
+      system: SYSTEM_PROMPT,
+      messages: messages as Anthropic.MessageParam[],
+    });
+
+    for await (const chunk of anthropicStream) {
+      if (
+        chunk.type === 'content_block_delta' &&
+        chunk.delta.type === 'text_delta'
+      ) {
+        yield encoder.encode(`data: ${JSON.stringify({ text: chunk.delta.text })}\n\n`);
+      }
+    }
+
+    yield encoder.encode('data: [DONE]\n\n');
+  }
+
+  const iterator = generateStream();
   const stream = new ReadableStream({
-    async start(controller) {
+    async pull(controller) {
       try {
-        const anthropicStream = await client.messages.stream({
-          model: 'claude-sonnet-4-6',
-          max_tokens: 4096,
-          system: SYSTEM_PROMPT,
-          messages,
-        });
-
-        for await (const chunk of anthropicStream) {
-          if (
-            chunk.type === 'content_block_delta' &&
-            chunk.delta.type === 'text_delta'
-          ) {
-            const data = JSON.stringify({ text: chunk.delta.text });
-            controller.enqueue(new TextEncoder().encode(`data: ${data}\n\n`));
-          }
+        const { value, done } = await iterator.next();
+        if (done) {
+          controller.close();
+        } else {
+          controller.enqueue(value);
         }
-
-        controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
-        controller.close();
       } catch (err) {
-        controller.error(err);
+        console.error('[chat] stream error:', err);
+        controller.close();
       }
     },
   });
