@@ -30,33 +30,26 @@ const SYSTEM_PROMPT = `אתה המנטור האישי של הלומד — מור
 המסלול: Agency (כסף מהיר) → SaaS (הכנסה חוזרת) → Company (חברה).`;
 
 export async function POST(req: NextRequest) {
-  // Auth check
+  // Auth
   const cookieStore = await cookies();
   const token = cookieStore.get('mentor_token')?.value;
-
-  if (!token) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   let subscribers;
   try {
     subscribers = await getSubscribers();
   } catch (err) {
-    console.error('[chat] getSubscribers failed:', err);
+    console.error('[chat] getSubscribers:', err);
     return NextResponse.json({ error: 'Storage error' }, { status: 500 });
   }
 
   const sub = subscribers.find((s) => s.token === token && s.active);
-
-  if (!sub) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+  if (!sub) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   if (new Date(sub.expiresAt) < new Date()) {
     return NextResponse.json({ error: 'Subscription expired' }, { status: 403 });
   }
 
-  let messages: { role: string; content: string }[];
+  let messages: Anthropic.MessageParam[];
   try {
     const body = await req.json();
     messages = body.messages;
@@ -64,7 +57,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  if (!messages || !Array.isArray(messages) || messages.length === 0) {
+  if (!Array.isArray(messages) || messages.length === 0) {
     return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
   }
 
@@ -77,41 +70,35 @@ export async function POST(req: NextRequest) {
   const client = new Anthropic({ apiKey });
   const encoder = new TextEncoder();
 
-  // Use pull-based ReadableStream (more reliable in Next.js App Router)
-  async function* generateStream() {
-    const anthropicStream = client.messages.stream({
+  // Collect full response then stream — avoids async-iterator edge cases
+  let fullText = '';
+  try {
+    const response = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 4096,
       system: SYSTEM_PROMPT,
-      messages: messages as Anthropic.MessageParam[],
+      messages,
     });
 
-    for await (const chunk of anthropicStream) {
-      if (
-        chunk.type === 'content_block_delta' &&
-        chunk.delta.type === 'text_delta'
-      ) {
-        yield encoder.encode(`data: ${JSON.stringify({ text: chunk.delta.text })}\n\n`);
+    for (const block of response.content) {
+      if (block.type === 'text') {
+        fullText += block.text;
       }
     }
-
-    yield encoder.encode('data: [DONE]\n\n');
+  } catch (err) {
+    console.error('[chat] Anthropic error:', err instanceof Error ? err.message : String(err));
+    return NextResponse.json({ error: 'AI error' }, { status: 500 });
   }
 
-  const iterator = generateStream();
+  // Return as SSE stream so the frontend reader works unchanged
+  const chunks = fullText.match(/[\s\S]{1,80}/g) ?? [fullText];
   const stream = new ReadableStream({
-    async pull(controller) {
-      try {
-        const { value, done } = await iterator.next();
-        if (done) {
-          controller.close();
-        } else {
-          controller.enqueue(value);
-        }
-      } catch (err) {
-        console.error('[chat] stream error:', err);
-        controller.close();
+    async start(controller) {
+      for (const chunk of chunks) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: chunk })}\n\n`));
       }
+      controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+      controller.close();
     },
   });
 
