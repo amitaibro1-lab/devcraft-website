@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { getSubscribers, saveSubscribers, addSubscriber } from '@/lib/mentor-db';
+import { sendMentorAccessEmail } from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -33,6 +34,11 @@ export async function POST(req: NextRequest) {
     expiresAt,
     active: true,
   });
+
+  // Send access email (fire-and-forget — don't fail the response if email fails)
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://amitaicraft.vercel.app';
+  sendMentorAccessEmail({ customerName: name, customerEmail: email, plan, token, siteUrl })
+    .catch((err) => console.error('[grant] email failed:', err));
 
   return NextResponse.json({ ok: true, token });
 }
