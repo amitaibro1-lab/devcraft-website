@@ -1,21 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { readJSON, writeJSON } from '@/lib/db';
+import { getSubscribers, saveSubscribers } from '@/lib/mentor-db';
 import { verifyGrowWebhook, planFromAmount } from '@/lib/grow';
 import { sendMentorAccessEmail } from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
-
-interface Subscriber {
-  token: string;
-  name: string;
-  email: string;
-  plan: string;
-  createdAt: string;
-  expiresAt: string;
-  active: boolean;
-  transactionId?: string;
-}
 
 export async function POST(req: NextRequest) {
   let payload: Record<string, string> = {};
@@ -59,7 +48,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Prevent duplicate processing
-  const subscribers = readJSON<Subscriber[]>('mentor-subscribers.json');
+  const subscribers = await getSubscribers();
   const duplicate = subscribers.find((s) => s.transactionId === transactionId);
   if (duplicate) {
     return NextResponse.json({ ok: true });
@@ -69,7 +58,7 @@ export async function POST(req: NextRequest) {
   const token = randomUUID();
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  const subscriber: Subscriber = {
+  const subscriber = {
     token,
     name: customerName,
     email: customerEmail,
@@ -81,7 +70,7 @@ export async function POST(req: NextRequest) {
   };
 
   subscribers.push(subscriber);
-  writeJSON('mentor-subscribers.json', subscribers);
+  await saveSubscribers(subscribers);
 
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://amitaicraft.com';
 

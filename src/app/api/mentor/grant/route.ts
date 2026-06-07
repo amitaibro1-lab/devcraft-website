@@ -1,18 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { readJSON, writeJSON } from '@/lib/db';
+import { getSubscribers, saveSubscribers, addSubscriber } from '@/lib/mentor-db';
 
 export const dynamic = 'force-dynamic';
-
-interface Subscriber {
-  token: string;
-  name: string;
-  email: string;
-  plan: string;
-  createdAt: string;
-  expiresAt: string;
-  active: boolean;
-}
 
 function requireAdmin(req: NextRequest): boolean {
   const password = req.headers.get('x-admin-password') ?? '';
@@ -20,7 +10,6 @@ function requireAdmin(req: NextRequest): boolean {
   return password.trim() === correct;
 }
 
-// POST — grant new access
 export async function POST(req: NextRequest) {
   if (!requireAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -37,41 +26,30 @@ export async function POST(req: NextRequest) {
     Date.now() + (days ?? 30) * 24 * 60 * 60 * 1000
   ).toISOString();
 
-  const subscriber: Subscriber = {
-    token,
-    name,
-    email,
-    plan,
+  await addSubscriber({
+    token, name, email, plan,
     createdAt: new Date().toISOString(),
     expiresAt,
     active: true,
-  };
-
-  const subscribers = readJSON<Subscriber[]>('mentor-subscribers.json');
-  subscribers.push(subscriber);
-  writeJSON('mentor-subscribers.json', subscribers);
+  });
 
   return NextResponse.json({ ok: true, token });
 }
 
-// GET — list all subscribers
 export async function GET(req: NextRequest) {
   if (!requireAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  const subscribers = readJSON<Subscriber[]>('mentor-subscribers.json');
-  return NextResponse.json(subscribers);
+  return NextResponse.json(await getSubscribers());
 }
 
-// PATCH — toggle active / extend
 export async function PATCH(req: NextRequest) {
   if (!requireAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { token, active, extendDays } = await req.json();
-  const subscribers = readJSON<Subscriber[]>('mentor-subscribers.json');
+  const subscribers = await getSubscribers();
   const idx = subscribers.findIndex((s) => s.token === token);
 
   if (idx === -1) {
@@ -89,19 +67,17 @@ export async function PATCH(req: NextRequest) {
     ).toISOString();
   }
 
-  writeJSON('mentor-subscribers.json', subscribers);
+  await saveSubscribers(subscribers);
   return NextResponse.json({ ok: true });
 }
 
-// DELETE — remove subscriber
 export async function DELETE(req: NextRequest) {
   if (!requireAdmin(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { token } = await req.json();
-  const subscribers = readJSON<Subscriber[]>('mentor-subscribers.json');
-  const filtered = subscribers.filter((s) => s.token !== token);
-  writeJSON('mentor-subscribers.json', filtered);
+  const subscribers = await getSubscribers();
+  await saveSubscribers(subscribers.filter((s) => s.token !== token));
   return NextResponse.json({ ok: true });
 }

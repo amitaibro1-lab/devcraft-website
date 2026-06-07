@@ -1,20 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { readJSON } from '@/lib/db';
+import { getSubscribers } from '@/lib/mentor-db';
 
 export const dynamic = 'force-dynamic';
 
-interface Subscriber {
-  token: string;
-  name: string;
-  email: string;
-  plan: string;
-  createdAt: string;
-  expiresAt: string;
-  active: boolean;
-}
-
-// POST /api/mentor/access — verify access code and set cookie
 export async function POST(req: NextRequest) {
   const { code } = await req.json();
 
@@ -22,7 +11,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'קוד גישה חסר' }, { status: 400 });
   }
 
-  const subscribers = readJSON<Subscriber[]>('mentor-subscribers.json');
+  const subscribers = await getSubscribers();
   const sub = subscribers.find((s) => s.token === code.trim() && s.active);
 
   if (!sub) {
@@ -44,7 +33,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true, name: sub.name, plan: sub.plan });
 }
 
-// GET /api/mentor/access — check current session
 export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get('mentor_token')?.value;
@@ -53,7 +41,7 @@ export async function GET() {
     return NextResponse.json({ authenticated: false });
   }
 
-  const subscribers = readJSON<Subscriber[]>('mentor-subscribers.json');
+  const subscribers = await getSubscribers();
   const sub = subscribers.find((s) => s.token === token && s.active);
 
   if (!sub || new Date(sub.expiresAt) < new Date()) {
@@ -63,7 +51,6 @@ export async function GET() {
   return NextResponse.json({ authenticated: true, name: sub.name, plan: sub.plan });
 }
 
-// DELETE /api/mentor/access — logout
 export async function DELETE() {
   const cookieStore = await cookies();
   cookieStore.delete('mentor_token');
