@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const PLANS = [
   {
@@ -74,8 +74,52 @@ export default function MentorPricingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Coupon state
+  const [couponInput, setCouponInput] = useState('');
+  const [coupon, setCoupon] = useState<{ code: string; discountPercent: number; creatorName: string } | null>(null);
+  const [couponError, setCouponError] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponLocked, setCouponLocked] = useState(false); // true when arriving via a tracking link
+
+  const validateCoupon = async (rawCode: string, lock = false) => {
+    const code = rawCode.trim();
+    if (!code) return;
+    setCouponLoading(true);
+    setCouponError('');
+    try {
+      const res = await fetch(`/api/coupons/validate?code=${encodeURIComponent(code)}`);
+      const data = await res.json();
+      if (data.valid) {
+        setCoupon({ code: data.code, discountPercent: data.discountPercent, creatorName: data.creatorName });
+        setCouponInput(data.code);
+        if (lock) setCouponLocked(true);
+      } else {
+        setCoupon(null);
+        setCouponError('קוד קופון לא תקין');
+      }
+    } catch {
+      setCoupon(null);
+      setCouponError('שגיאה בבדיקת הקוד');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  // Prefill + lock the coupon when arriving via a creator tracking link (?coupon=).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fromLink = params.get('coupon');
+    if (fromLink) validateCoupon(fromLink, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const selectedPlan = PLANS.find((p) => p.id === selected);
   const selectedPrices = selectedPlan ? getPrices(selectedPlan, annual) : null;
+
+  // Charged amount before/after the coupon discount.
+  const discountPct = coupon?.discountPercent ?? 0;
+  const baseCharge = annual ? (selectedPrices?.total ?? 0) : (selectedPlan?.monthlyPrice ?? 0);
+  const finalCharge = Math.round(baseCharge * (1 - discountPct / 100));
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,6 +137,7 @@ export default function MentorPricingPage() {
           plan: selected,
           annual,
           amount: annual ? selectedPrices?.total : selectedPlan?.monthlyPrice,
+          couponCode: coupon?.code,
         }),
       });
 
@@ -248,13 +293,26 @@ export default function MentorPricingPage() {
               className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4"
             >
               <h3 className="text-white font-semibold text-center">
-                {selected} — {annual
-                  ? `₪${selectedPrices?.total}/שנה`
-                  : `₪${selectedPlan?.monthlyPrice}/חודש`}
+                {selected} —{' '}
+                {coupon ? (
+                  <>
+                    <span className="line-through text-slate-500 ml-1">₪{baseCharge}</span>
+                    <span className="text-green-400">
+                      ₪{finalCharge}{annual ? '/שנה' : '/חודש'}
+                    </span>
+                  </>
+                ) : (
+                  annual ? `₪${selectedPrices?.total}/שנה` : `₪${selectedPlan?.monthlyPrice}/חודש`
+                )}
               </h3>
-              {annual && selectedPrices?.saved && (
+              {annual && selectedPrices?.saved && !coupon && (
                 <p className="text-center text-green-400 text-xs -mt-2">
                   חוסך ₪{selectedPrices.saved} לעומת תשלום חודשי
+                </p>
+              )}
+              {coupon && (
+                <p className="text-center text-green-400 text-xs -mt-2">
+                  קופון {coupon.code} — {coupon.discountPercent}% הנחה 🎉
                 </p>
               )}
               <div>
@@ -281,6 +339,47 @@ export default function MentorPricingPage() {
                 />
               </div>
 
+              {/* Coupon code */}
+              <div>
+                <label className="block text-sm text-slate-400 mb-1">קוד קופון (אופציונלי)</label>
+                {coupon && couponLocked ? (
+                  <div className="flex items-center justify-between bg-green-500/10 border border-green-500/30 rounded-xl px-4 py-3">
+                    <span className="text-green-400 text-sm font-medium">
+                      ✓ {coupon.code} ({coupon.discountPercent}% הנחה)
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      value={couponInput}
+                      onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); }}
+                      placeholder="הזן קוד"
+                      dir="ltr"
+                      className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-colors text-sm"
+                    />
+                    {coupon ? (
+                      <button
+                        type="button"
+                        onClick={() => { setCoupon(null); setCouponInput(''); setCouponError(''); }}
+                        className="flex-none bg-white/10 hover:bg-white/20 text-slate-300 text-sm px-4 rounded-xl transition-colors"
+                      >
+                        הסר
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => validateCoupon(couponInput)}
+                        disabled={couponLoading || !couponInput.trim()}
+                        className="flex-none bg-white/10 hover:bg-white/20 disabled:opacity-40 text-white text-sm px-4 rounded-xl transition-colors"
+                      >
+                        {couponLoading ? '...' : 'החל'}
+                      </button>
+                    )}
+                  </div>
+                )}
+                {couponError && <p className="text-red-400 text-xs mt-1">{couponError}</p>}
+              </div>
+
               {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
               <button
@@ -290,9 +389,7 @@ export default function MentorPricingPage() {
               >
                 {loading
                   ? 'מעבד...'
-                  : annual
-                    ? `שלם ₪${selectedPrices?.total} לשנה ←`
-                    : `שלם ₪${selectedPlan?.monthlyPrice}/חודש ←`}
+                  : `שלם ₪${finalCharge}${annual ? ' לשנה' : '/חודש'} ←`}
               </button>
 
               <p className="text-slate-600 text-xs text-center">

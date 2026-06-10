@@ -1,0 +1,38 @@
+[     133ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3001/login:0
+[     156ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[     200ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[  184576ms] Error: @supabase/ssr: Your project's URL and API key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at createBrowserClient (http://localhost:3001/_next/static/chunks/0wb9_08x97vp._.js:27622:15)
+    at createClient (http://localhost:3001/_next/static/chunks/Desktop_kopi_118lais._.js:13:232)
+    at handleLogin (http://localhost:3001/_next/static/chunks/Desktop_kopi_118lais._.js:49:190)
+    at executeDispatch (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:10329:13)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:965:74)
+    at processDispatchQueue (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:10355:41)
+    at http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:10633:13
+    at batchedUpdates$1 (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:2253:44)
+    at dispatchEventForPluginEventSystem (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:10431:9)
+    at dispatchEvent (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:13002:37)
+    at dispatchDiscreteEvent (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:12984:64)
+[  186900ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[  187301ms] [LOG] [Fast Refresh] done in 507ms @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[  187431ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3001/signup:0
+[  208919ms] Error: @supabase/ssr: Your project's URL and API key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at createBrowserClient (http://localhost:3001/_next/static/chunks/0wb9_08x97vp._.js:27622:15)
+    at createClient (http://localhost:3001/_next/static/chunks/Desktop_kopi_118lais._.js:13:232)
+    at handleSignup (http://localhost:3001/_next/static/chunks/Desktop_kopi_0l.jgcb._.js:50:190)
+    at executeDispatch (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:10329:13)
+    at runWithFiberInDEV (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:965:74)
+    at processDispatchQueue (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:10355:41)
+    at http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:10633:13
+    at batchedUpdates$1 (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:2253:44)
+    at dispatchEventForPluginEventSystem (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:10431:9)
+    at dispatchEvent (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:13002:37)
+    at dispatchDiscreteEvent (http://localhost:3001/_next/static/chunks/0wb9_next_dist_compiled_react-dom_0w8w~b-._.js:12984:64)

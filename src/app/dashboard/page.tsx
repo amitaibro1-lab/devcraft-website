@@ -8,6 +8,8 @@ import InquiryRow from '@/components/dashboard/InquiryRow';
 import PaymentsTable from '@/components/dashboard/PaymentsTable';
 import ServiceEditor from '@/components/dashboard/ServiceEditor';
 import MentorSubscribers from '@/components/dashboard/MentorSubscribers';
+import CouponsManager from '@/components/dashboard/CouponsManager';
+import PartnershipCalculator from '@/components/dashboard/PartnershipCalculator';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Inquiry {
@@ -62,6 +64,8 @@ const TABS = [
   { id: 'payments', label: 'תשלומים', icon: '💳' },
   { id: 'services', label: 'שירותים ומחירים', icon: '🛠️' },
   { id: 'mentor', label: 'מנויי מנטור', icon: '🧠' },
+  { id: 'coupons', label: 'קופונים ושותפים', icon: '🎟️' },
+  { id: 'calculator', label: 'מחשבון שותפות', icon: '🧮' },
   { id: 'settings', label: 'הגדרות', icon: '⚙️' },
 ];
 
@@ -415,6 +419,20 @@ export default function DashboardPage() {
             {activeTab === 'mentor' && (
               <motion.div key="mentor" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <MentorSubscribers password={adminPassword} />
+              </motion.div>
+            )}
+
+            {/* ── Coupons / affiliates ───────────────────────────────────────── */}
+            {activeTab === 'coupons' && (
+              <motion.div key="coupons" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <CouponsManager password={adminPassword} />
+              </motion.div>
+            )}
+
+            {/* ── Partnership calculator ─────────────────────────────────────── */}
+            {activeTab === 'calculator' && (
+              <motion.div key="calculator" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <PartnershipCalculator />
               </motion.div>
             )}
 

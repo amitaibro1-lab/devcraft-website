@@ -1,0 +1,31 @@
+[     366ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[     778ms] [LOG] [Fast Refresh] done in 513ms @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[     948ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[    1348ms] [LOG] [Fast Refresh] done in 502ms @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[    1351ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/login:0
+[    1477ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/0wb9_react-dom_034.-52._.js:15305
+[    1533ms] Error: Your project's URL and Key are required to create a Supabase client!
+
+Check your Supabase project's API settings to find these values
+
+https://supabase.com/dashboard/project/_/settings/api
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at <unknown> (https://supabase.com/dashboard/project/_/settings/api)
+    at createServerClient (file://C:\Users\amita\Desktop\kopi\.next\dev\server\edge\chunks\0wb9_0883y38._.js:10524:15)
+    at middleware (file://C:\Users\amita\Desktop\kopi\.next\dev\server\edge\chunks\[root-of-the-server]__05aoxi9._.js:32:245)
+    at <unknown> (file://C:\Users\amita\Desktop\kopi\.next\dev\server\edge\chunks\0wb9_next_dist_0q_u3i1._.js:19062:26)
+    at AsyncLocalStorage.run (node:async_hooks:346:14)
+    at <unknown> (file://C:\Users\amita\Desktop\kopi\.next\dev\server\edge\chunks\0wb9_next_dist_0q_u3i1._.js:7808:693)
+    at AsyncLocalStorage.run (node:async_hooks:346:14)
+    at <unknown> (file://C:\Users\amita\Desktop\kopi\.next\dev\server\edge\chunks\0wb9_next_dist_0q_u3i1._.js:7808:344)
+    at async adapter (file://C:\Users\amita\Desktop\kopi\.next\dev\server\edge\chunks\0wb9_next_dist_0q_u3i1._.js:7762:16)
+    at async (file://C:\Users\amita\Desktop\kopi\node_modules\next\dist\server\web\sandbox\sandbox.js:115:26)
+    at async runWithTaggedErrors (file://C:\Users\amita\Desktop\kopi\node_modules\next\dist\server\web\sandbox\sandbox.js:112:9)
+[    1527ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_020_w78._.js:1226
+[   14181ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_020_w78._.js:1226
+[   14222ms] [LOG] [Fast Refresh] done in 71ms @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_020_w78._.js:1226
+[   14326ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_020_w78._.js:1226
+[   14842ms] [LOG] [Fast Refresh] done in 617ms @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_020_w78._.js:1226
+[   14869ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3001/login:0
+[   14892ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477
+[   14912ms] [LOG] [HMR] connected @ http://localhost:3001/_next/static/chunks/0wb9_next_dist_0xopla8._.js:2477

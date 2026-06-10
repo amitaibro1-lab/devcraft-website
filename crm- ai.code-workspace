@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "crm- ai",
+			"path": "../crm- ai"
+		},
+		{
+			"name": "mysite",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { getSubscribers, saveSubscribers } from '@/lib/mentor-db';
 import { verifyGrowWebhook, planFromAmount } from '@/lib/grow';
+import { consumePending, recordRedemption } from '@/lib/coupons-db';
 import { sendMentorAccessEmail } from '@/lib/mailer';
 import { rateLimit, clientIp } from '@/lib/ratelimit';
 import { newReqId, logEvent, maskEmail, tokenLast4 } from '@/lib/log';
@@ -80,6 +81,19 @@ export async function POST(req: NextRequest) {
 
   subscribers.push(subscriber);
   await saveSubscribers(subscribers);
+
+  // Attribute the sale to a coupon if this buyer checked out with one (matched
+  // by email via the pending record). Best-effort — never fail the webhook over
+  // coupon bookkeeping, the subscriber is already created above.
+  try {
+    const couponCode = await consumePending(customerEmail);
+    if (couponCode) {
+      await recordRedemption(couponCode, amount);
+      logEvent(reqId, 'coupon_redeemed', { plan, amount });
+    }
+  } catch (err) {
+    console.error('coupon redemption tracking failed:', err);
+  }
 
   await appendAudit({
     action: 'subscriber_paid',

@@ -1,0 +1,96 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]: קופי
+      - link "התחל בחינם" [ref=e5] [cursor=pointer]:
+        - /url: /generate
+    - generic [ref=e6]:
+      - generic [ref=e7]: Hebrew-first AI ✦ מבין את השוק הישראלי
+      - heading "תוכן שיווקי בעברית תוך 30 שניות" [level=1] [ref=e8]:
+        - text: תוכן שיווקי בעברית
+        - text: תוך 30 שניות
+      - paragraph [ref=e9]: צור פוסטים לאינסטגרם ופייסבוק, הודעות ווצאפ, מודעות גוגל ומיילים — בעברית שמרגישה ישראלית. לא תרגום. כתיבה מקורית.
+      - link "נסה בחינם עכשיו →" [ref=e10] [cursor=pointer]:
+        - /url: /generate
+      - paragraph [ref=e11]: ללא כרטיס אשראי. 10 יצירות חינם.
+    - generic [ref=e13]:
+      - heading "מה אתה מקבל בכל יצירה" [level=2] [ref=e14]
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - generic [ref=e17]: 📸
+          - generic [ref=e18]: 3 פוסטים לאינסטגרם
+          - generic [ref=e19]: עם האשטאגים רלוונטיים
+        - generic [ref=e20]:
+          - generic [ref=e21]: 📘
+          - generic [ref=e22]: פוסט לפייסבוק
+          - generic [ref=e23]: עם סיפור ועומק
+        - generic [ref=e24]:
+          - generic [ref=e25]: 💬
+          - generic [ref=e26]: הודעת ווצאפ
+          - generic [ref=e27]: לרשימת התפוצה שלך
+        - generic [ref=e28]:
+          - generic [ref=e29]: 🔍
+          - generic [ref=e30]: מודעת גוגל
+          - generic [ref=e31]: תמציתית ומשכנעת
+        - generic [ref=e32]:
+          - generic [ref=e33]: 📧
+          - generic [ref=e34]: 2 שורות נושא למייל
+          - generic [ref=e35]: לבדיקת A/B
+        - generic [ref=e36]:
+          - generic [ref=e37]: 🇮🇱
+          - generic [ref=e38]: עברית אמיתית
+          - generic [ref=e39]: לא תרגום מאנגלית
+    - generic [ref=e41]:
+      - heading "תמחור" [level=2] [ref=e42]
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - generic [ref=e45]: חינם
+          - generic [ref=e46]: ₪0/חודש
+          - generic [ref=e47]: להתנסות
+          - list [ref=e48]:
+            - listitem [ref=e49]:
+              - generic [ref=e50]: ✓
+              - text: 10 יצירות בחודש
+            - listitem [ref=e51]:
+              - generic [ref=e52]: ✓
+              - text: כל סוגי התוכן
+            - listitem [ref=e53]:
+              - generic [ref=e54]: ✓
+              - text: ללא כרטיס אשראי
+          - link "התחל" [ref=e55] [cursor=pointer]:
+            - /url: /generate
+        - generic [ref=e56]:
+          - generic [ref=e57]: עסק
+          - generic [ref=e58]: ₪149/חודש
+          - generic [ref=e59]: לעסקים פעילים
+          - list [ref=e60]:
+            - listitem [ref=e61]:
+              - generic [ref=e62]: ✓
+              - text: יצירות ללא הגבלה
+            - listitem [ref=e63]:
+              - generic [ref=e64]: ✓
+              - text: שמירת Profile עסק
+            - listitem [ref=e65]:
+              - generic [ref=e66]: ✓
+              - text: היסטוריה מלאה
+          - link "הצטרף" [ref=e67] [cursor=pointer]:
+            - /url: /generate
+        - generic [ref=e68]:
+          - generic [ref=e69]: סוכנות
+          - generic [ref=e70]: ₪399/חודש
+          - generic [ref=e71]: לניהול מספר עסקים
+          - list [ref=e72]:
+            - listitem [ref=e73]:
+              - generic [ref=e74]: ✓
+              - text: עד 10 עסקים
+            - listitem [ref=e75]:
+              - generic [ref=e76]: ✓
+              - text: White-label
+            - listitem [ref=e77]:
+              - generic [ref=e78]: ✓
+              - text: תמיכה מועדפת
+          - link "צור קשר" [ref=e79] [cursor=pointer]:
+            - /url: /generate
+    - generic [ref=e80]: קופי © 2025 — תוכן שיווקי AI בעברית
+  - button "Open Next.js Dev Tools" [ref=e86] [cursor=pointer]:
+    - img [ref=e87]

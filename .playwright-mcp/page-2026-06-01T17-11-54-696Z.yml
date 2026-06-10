@@ -1,0 +1,37 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - link "קופי" [ref=e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e5]: "|"
+      - generic [ref=e6]: יצירת תוכן
+    - generic [ref=e7]:
+      - heading "מה תרצה לקדם היום?" [level=1] [ref=e8]
+      - paragraph [ref=e9]: מלא פרטים פעם אחת — קבל תוכן לכל הפלטפורמות.
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: שם העסק *
+            - 'textbox "למשל: מספרת דנה" [ref=e14]'
+          - generic [ref=e15]:
+            - generic [ref=e16]: תחום *
+            - 'textbox "למשל: מספרה, מסעדה, פיטנס" [ref=e17]'
+        - generic [ref=e18]:
+          - generic [ref=e19]: קהל יעד *
+          - 'textbox "למשל: נשים בגילאי 25-45, אמהות לילדים" [ref=e20]'
+        - generic [ref=e21]:
+          - generic [ref=e22]: מוצרים / שירותים עיקריים
+          - 'textbox "למשל: תספורת, צביעה, טיפולי שיער" [ref=e23]'
+        - generic [ref=e24]:
+          - generic [ref=e25]: טון הכתיבה
+          - generic [ref=e26]:
+            - button "מקצועי" [ref=e27]
+            - button "חברי" [ref=e28]
+            - button "הומוריסטי" [ref=e29]
+        - generic [ref=e30]:
+          - generic [ref=e31]: מה לקדם היום? *
+          - 'textbox "למשל: מבצע חודש יולי — 20% הנחה על כל הצביעות. רוצה להגיע לנשים שמחפשות שדרוג לפני הקיץ." [ref=e32]'
+        - button "צור תוכן שיווקי ←" [ref=e33]
+  - button "Open Next.js Dev Tools" [ref=e39] [cursor=pointer]:
+    - img [ref=e40]
+  - alert [ref=e43]
