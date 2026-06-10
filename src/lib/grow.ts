@@ -44,10 +44,12 @@ export async function createGrowPaymentLink(params: GrowPaymentParams): Promise<
   return data.data?.url as string;
 }
 
-// Verify webhook authenticity by comparing the webhookKey field to our secret
+// Verify webhook authenticity by comparing the webhookKey field to our secret.
+// Fails closed in production: if no key is configured, reject (so the endpoint
+// can't be abused to mint free subscriptions). Allowed only in local dev.
 export function verifyGrowWebhook(webhookKey: string): boolean {
-  const expected = process.env.GROW_WEBHOOK_KEY ?? '';
-  if (!expected) return true; // not configured yet — allow in dev
+  const expected = (process.env.GROW_WEBHOOK_KEY ?? '').trim();
+  if (!expected) return process.env.NODE_ENV !== 'production';
   return webhookKey === expected;
 }
 

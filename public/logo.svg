@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer ring -->
+  <circle cx="100" cy="100" r="96" fill="url(#bg)" opacity="0.15"/>
+  <circle cx="100" cy="100" r="96" stroke="url(#bg)" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Neural network nodes -->
+  <circle cx="100" cy="52" r="5" fill="url(#glow)"/>
+  <circle cx="140" cy="72" r="4" fill="url(#glow)" opacity="0.8"/>
+  <circle cx="148" cy="112" r="4" fill="url(#glow)" opacity="0.8"/>
+  <circle cx="128" cy="148" r="4" fill="url(#glow)" opacity="0.7"/>
+  <circle cx="72" cy="148" r="4" fill="url(#glow)" opacity="0.7"/>
+  <circle cx="52" cy="112" r="4" fill="url(#glow)" opacity="0.8"/>
+  <circle cx="60" cy="72" r="4" fill="url(#glow)" opacity="0.8"/>
+
+  <!-- Neural connections -->
+  <line x1="100" y1="52" x2="140" y2="72" stroke="url(#glow)" stroke-width="1" opacity="0.4"/>
+  <line x1="100" y1="52" x2="60" y2="72" stroke="url(#glow)" stroke-width="1" opacity="0.4"/>
+  <line x1="140" y1="72" x2="148" y2="112" stroke="url(#glow)" stroke-width="1" opacity="0.4"/>
+  <line x1="60" y1="72" x2="52" y2="112" stroke="url(#glow)" stroke-width="1" opacity="0.4"/>
+  <line x1="148" y1="112" x2="128" y2="148" stroke="url(#glow)" stroke-width="1" opacity="0.4"/>
+  <line x1="52" y1="112" x2="72" y2="148" stroke="url(#glow)" stroke-width="1" opacity="0.4"/>
+  <line x1="100" y1="52" x2="148" y2="112" stroke="url(#glow)" stroke-width="0.8" opacity="0.2"/>
+  <line x1="100" y1="52" x2="52" y2="112" stroke="url(#glow)" stroke-width="0.8" opacity="0.2"/>
+  <line x1="140" y1="72" x2="128" y2="148" stroke="url(#glow)" stroke-width="0.8" opacity="0.2"/>
+  <line x1="60" y1="72" x2="72" y2="148" stroke="url(#glow)" stroke-width="0.8" opacity="0.2"/>
+
+  <!-- Central brain / spark shape -->
+  <path d="M100 68 C88 68 78 76 76 88 C70 88 64 94 64 102 C64 112 70 118 78 120 C80 132 90 140 100 140 C110 140 120 132 122 120 C130 118 136 112 136 102 C136 94 130 88 124 88 C122 76 112 68 100 68Z" fill="url(#bg)" opacity="0.9"/>
+  <path d="M100 68 C88 68 78 76 76 88 C70 88 64 94 64 102 C64 112 70 118 78 120 C80 132 90 140 100 140 C110 140 120 132 122 120 C130 118 136 112 136 102 C136 94 130 88 124 88 C122 76 112 68 100 68Z" stroke="url(#glow)" stroke-width="1.5" fill="none"/>
+
+  <!-- Brain fissures -->
+  <path d="M100 74 L100 104" stroke="url(#glow)" stroke-width="1.2" opacity="0.6" stroke-linecap="round"/>
+  <path d="M85 85 C88 90 85 98 88 104" stroke="url(#glow)" stroke-width="1" opacity="0.5" stroke-linecap="round" fill="none"/>
+  <path d="M115 85 C112 90 115 98 112 104" stroke="url(#glow)" stroke-width="1" opacity="0.5" stroke-linecap="round" fill="none"/>
+  <path d="M78 102 C85 104 95 102 100 104 C105 102 115 104 122 102" stroke="url(#glow)" stroke-width="1" opacity="0.5" fill="none"/>
+
+  <!-- Lightning bolt center — AI spark -->
+  <path d="M104 80 L96 100 L102 100 L98 122 L108 97 L102 97 Z" fill="white" opacity="0.9"/>
+</svg>

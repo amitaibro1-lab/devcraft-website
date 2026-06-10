@@ -10,6 +10,7 @@ interface Subscriber {
   createdAt: string;
   expiresAt: string;
   active: boolean;
+  googleId?: string | null;
 }
 
 interface Props {
@@ -96,6 +97,16 @@ export default function MentorSubscribers({ password }: Props) {
       method: 'PATCH',
       headers: adminHeaders(true),
       body: JSON.stringify({ token, extendDays: 30 }),
+    });
+    load();
+  };
+
+  const unlinkGoogle = async (token: string) => {
+    if (!confirm('לנתק את חשבון Google?')) return;
+    await fetch('/api/mentor/grant', {
+      method: 'PATCH',
+      headers: adminHeaders(true),
+      body: JSON.stringify({ token, unlinkGoogle: true }),
     });
     load();
   };
@@ -249,6 +260,15 @@ export default function MentorSubscribers({ password }: Props) {
                     >
                       {sub.plan}
                     </span>
+                    {sub.googleId ? (
+                      <span className="text-xs text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-full">
+                        G מקושר
+                      </span>
+                    ) : (
+                      <span className="text-xs text-slate-500 bg-slate-500/10 px-2 py-0.5 rounded-full">
+                        ללא Google
+                      </span>
+                    )}
                     {!sub.active && (
                       <span className="text-xs text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full">
                         מושהה
@@ -293,6 +313,15 @@ export default function MentorSubscribers({ password }: Props) {
                   >
                     {sub.active ? 'השהה' : 'הפעל'}
                   </button>
+                  {sub.googleId && (
+                    <button
+                      onClick={() => unlinkGoogle(sub.token)}
+                      className="text-xs bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 px-2 py-1.5 rounded-lg transition-colors"
+                      title="נתק חשבון Google"
+                    >
+                      נתק G
+                    </button>
+                  )}
                   <button
                     onClick={() => deleteSubscriber(sub.token)}
                     className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2 py-1.5 rounded-lg transition-colors"

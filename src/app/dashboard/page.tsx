@@ -141,9 +141,10 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const load = useCallback(async () => {
+    const authHeader = { 'x-admin-password': adminPassword };
     const [inq, pay, svc, cfg] = await Promise.all([
-      fetch('/api/inquiries').then((r) => r.json()),
-      fetch('/api/payments').then((r) => r.json()),
+      fetch('/api/inquiries', { headers: authHeader }).then((r) => r.json()),
+      fetch('/api/payments', { headers: authHeader }).then((r) => r.json()),
       fetch('/api/services').then((r) => r.json()),
       fetch('/api/config').then((r) => r.json()),
     ]);
@@ -151,7 +152,7 @@ export default function DashboardPage() {
     setPayments(Array.isArray(pay) ? pay : []);
     setServices(Array.isArray(svc) ? svc : []);
     setConfig(cfg);
-  }, []);
+  }, [adminPassword]);
 
   useEffect(() => {
     if (authed) load();
@@ -160,7 +161,7 @@ export default function DashboardPage() {
   const updateInquiryStatus = async (id: string, status: string) => {
     await fetch('/api/inquiries', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
       body: JSON.stringify({ id, status }),
     });
     setInquiries((prev) =>
@@ -173,7 +174,7 @@ export default function DashboardPage() {
     setServices(next);
     await fetch('/api/services', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
       body: JSON.stringify(next),
     });
   };
@@ -183,7 +184,7 @@ export default function DashboardPage() {
     setServices(next);
     await fetch('/api/services', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
       body: JSON.stringify(next),
     });
   };
@@ -207,7 +208,7 @@ export default function DashboardPage() {
     setServices(next);
     await fetch('/api/services', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
       body: JSON.stringify(next),
     });
   };
@@ -216,7 +217,7 @@ export default function DashboardPage() {
     setConfigSaving(true);
     await fetch('/api/config', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
       body: JSON.stringify(config),
     });
     setConfigSaved(true);

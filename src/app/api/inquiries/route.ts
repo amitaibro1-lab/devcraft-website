@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readJSON, writeJSON } from '@/lib/db';
+import { requireAdmin } from '@/lib/admin-auth';
+
+export const dynamic = 'force-dynamic';
 
 interface Inquiry {
   id: string;
@@ -7,7 +10,10 @@ interface Inquiry {
   [key: string]: unknown;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!requireAdmin(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const inquiries = readJSON('inquiries.json');
     return NextResponse.json(inquiries);
@@ -17,6 +23,9 @@ export async function GET() {
 }
 
 export async function PATCH(req: NextRequest) {
+  if (!requireAdmin(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { id, status } = await req.json();
     const inquiries = readJSON<Inquiry[]>('inquiries.json');

@@ -1,5 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { readJSON } from '@/lib/db';
+import { requireAdmin } from '@/lib/admin-auth';
+
+export const dynamic = 'force-dynamic';
 
 interface Payment {
   id: string;
@@ -13,7 +16,10 @@ interface Payment {
   paymentRef?: string;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!requireAdmin(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const payments = readJSON<Payment[]>('payments.json');
 

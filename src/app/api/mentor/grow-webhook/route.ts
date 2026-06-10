@@ -3,11 +3,18 @@ import { randomUUID } from 'crypto';
 import { getSubscribers, saveSubscribers } from '@/lib/mentor-db';
 import { verifyGrowWebhook, planFromAmount } from '@/lib/grow';
 import { sendMentorAccessEmail } from '@/lib/mailer';
+import { rateLimit, clientIp } from '@/lib/ratelimit';
+import { newReqId, logEvent, maskEmail, tokenLast4 } from '@/lib/log';
+import { appendAudit } from '@/lib/audit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
+  const reqId = newReqId();
+  const rl = await rateLimit(`webhook:${clientIp(req)}`, 30, 60);
+  if (!rl.ok) return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+
   let payload: Record<string, string> = {};
 
   const contentType = req.headers.get('content-type') ?? '';
@@ -28,6 +35,7 @@ export async function POST(req: NextRequest) {
   // Verify webhook authenticity
   const webhookKey = payload.webhookKey ?? payload.webhook_key ?? '';
   if (!verifyGrowWebhook(webhookKey)) {
+    logEvent(reqId, 'webhook_invalid_key');
     return NextResponse.json({ error: 'Invalid webhook key' }, { status: 401 });
   }
 
@@ -72,6 +80,14 @@ export async function POST(req: NextRequest) {
 
   subscribers.push(subscriber);
   await saveSubscribers(subscribers);
+
+  await appendAudit({
+    action: 'subscriber_paid',
+    emailMasked: maskEmail(customerEmail),
+    tokenLast4: tokenLast4(token),
+    details: `plan=${plan} amount=${amount}`,
+  });
+  logEvent(reqId, 'webhook_subscriber_created', { plan, amount });
 
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://amitaicraft.com';
 
