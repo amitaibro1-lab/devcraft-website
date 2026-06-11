@@ -6,16 +6,10 @@ import { sendMentorAccessEmail } from '@/lib/mailer';
 import { rateLimit, clientIp } from '@/lib/ratelimit';
 import { appendAudit } from '@/lib/audit';
 import { maskEmail, tokenLast4 } from '@/lib/log';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-function requireAdmin(req: NextRequest): boolean {
-  const password = req.headers.get('x-admin-password') ?? '';
-  const correct = process.env.DASHBOARD_PASSWORD?.trim() ?? '';
-  if (!correct) return false;
-  return password.trim() === correct;
-}
 
 // Generous per-IP limit — bounds brute-force against the admin password while
 // leaving plenty of headroom for normal dashboard use. Fail-open if KV is down.

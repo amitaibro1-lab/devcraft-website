@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findCoupon, addPending } from '@/lib/coupons-db';
 import { rateLimit, clientIp } from '@/lib/ratelimit';
+import { requireSyncKey } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -8,8 +9,7 @@ export const runtime = 'nodejs';
 // Called by ai-mentor's create-payment when a buyer checks out with a coupon.
 // Records the intended redemption (matched back by email at the webhook).
 export async function POST(req: NextRequest) {
-  const syncKey = (process.env.MENTOR_SYNC_KEY ?? '').trim();
-  if (!syncKey || req.headers.get('x-sync-key')?.trim() !== syncKey) {
+  if (!requireSyncKey(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

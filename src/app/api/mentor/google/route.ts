@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
+import { requireSyncKey } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 function authOk(req: NextRequest): boolean {
-  const key = process.env.MENTOR_SYNC_KEY?.trim() ?? '';
-  return !!key && req.headers.get('x-sync-key') === key;
+  return requireSyncKey(req);
 }
 
 export async function POST(req: NextRequest) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { consumePending, recordRedemption } from '@/lib/coupons-db';
 import { rateLimit, clientIp } from '@/lib/ratelimit';
 import { newReqId, logEvent, maskEmail } from '@/lib/log';
+import { requireSyncKey } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -9,8 +10,7 @@ export const runtime = 'nodejs';
 // Called by ai-mentor's grow-webhook after a successful payment: consumes the
 // pending redemption for this buyer and credits the coupon (count + revenue).
 export async function POST(req: NextRequest) {
-  const syncKey = (process.env.MENTOR_SYNC_KEY ?? '').trim();
-  if (!syncKey || req.headers.get('x-sync-key')?.trim() !== syncKey) {
+  if (!requireSyncKey(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -28,6 +28,11 @@ export async function POST(req: NextRequest) {
   }
   if (!email) {
     return NextResponse.json({ error: 'Missing email' }, { status: 400 });
+  }
+  // Bound the credited amount — a negative or absurd value would corrupt
+  // the creator's revenue stats.
+  if (amount <= 0 || amount >= 100000) {
+    return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
   }
 
   const code = await consumePending(email);

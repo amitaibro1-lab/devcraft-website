@@ -8,6 +8,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// User-supplied fields (names, messages) go into HTML templates — escape them
+// so a crafted value can't inject markup into the email body.
+function esc(value: string | number): string {
+  return String(value).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!),
+  );
+}
+
 export async function sendContactEmail(data: {
   name: string;
   email: string;
@@ -22,10 +30,10 @@ export async function sendContactEmail(data: {
       <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #6366f1;">פנייה חדשה מהאתר</h2>
         <table style="width:100%; border-collapse: collapse;">
-          <tr><td style="padding:8px; font-weight:bold;">שם:</td><td style="padding:8px;">${data.name}</td></tr>
-          <tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">אימייל:</td><td style="padding:8px;">${data.email}</td></tr>
-          <tr><td style="padding:8px; font-weight:bold;">שירות:</td><td style="padding:8px;">${data.service}</td></tr>
-          <tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">הודעה:</td><td style="padding:8px;">${data.message}</td></tr>
+          <tr><td style="padding:8px; font-weight:bold;">שם:</td><td style="padding:8px;">${esc(data.name)}</td></tr>
+          <tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">אימייל:</td><td style="padding:8px;">${esc(data.email)}</td></tr>
+          <tr><td style="padding:8px; font-weight:bold;">שירות:</td><td style="padding:8px;">${esc(data.service)}</td></tr>
+          <tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">הודעה:</td><td style="padding:8px;">${esc(data.message)}</td></tr>
         </table>
       </div>
     `,
@@ -48,7 +56,7 @@ export async function sendMentorAccessEmail(data: {
     html: `
       <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f0f1a; color: #f1f5f9; padding: 32px; border-radius: 16px;">
         <h1 style="color: #818cf8; margin-bottom: 8px;">🧠 AI Master Mentor</h1>
-        <p style="font-size: 18px;">שלום ${customerName}! ברוך הבא לתוכנית <strong style="color: #818cf8;">${plan}</strong></p>
+        <p style="font-size: 18px;">שלום ${esc(customerName)}! ברוך הבא לתוכנית <strong style="color: #818cf8;">${esc(plan)}</strong></p>
 
         <p>קוד הגישה שלך מוכן. שמור אותו — תצטרך אותו בכל כניסה:</p>
 
@@ -63,7 +71,7 @@ export async function sendMentorAccessEmail(data: {
 
         <hr style="border: none; border-top: 1px solid #1e1e2e; margin: 32px 0;" />
         <p style="color: #475569; font-size: 13px;">
-          תוכנית: ${plan} · בברכה, AmitaiCraft<br>
+          תוכנית: ${esc(plan)} · בברכה, AmitaiCraft<br>
           שמור את הקוד הזה — תצטרך אותו בכל כניסה.
         </p>
       </div>
@@ -75,7 +83,7 @@ export async function sendMentorAccessEmail(data: {
     from: process.env.EMAIL_USER,
     to: process.env.EMAIL_USER,
     subject: `🧠 מנוי מנטור חדש — ${customerName} (${plan})`,
-    html: `<div dir="rtl"><p>לקוח: ${customerName}</p><p>אימייל: ${customerEmail}</p><p>תוכנית: ${plan}</p><p>טוקן: ${token}</p></div>`,
+    html: `<div dir="rtl"><p>לקוח: ${esc(customerName)}</p><p>אימייל: ${esc(customerEmail)}</p><p>תוכנית: ${esc(plan)}</p><p>טוקן: ${esc(token)}</p></div>`,
   });
 }
 
@@ -98,13 +106,13 @@ export async function sendPaymentConfirmationEmails(data: {
       <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #22c55e;">💰 תשלום חדש התקבל!</h2>
         <table style="width:100%; border-collapse: collapse;">
-          <tr><td style="padding:8px; font-weight:bold;">לקוח:</td><td style="padding:8px;">${customerName}</td></tr>
-          <tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">אימייל:</td><td style="padding:8px;">${customerEmail}</td></tr>
-          <tr><td style="padding:8px; font-weight:bold;">שירות:</td><td style="padding:8px;">${serviceType}</td></tr>
-          ${packageName ? `<tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">חבילה:</td><td style="padding:8px;">${packageName}</td></tr>` : ''}
+          <tr><td style="padding:8px; font-weight:bold;">לקוח:</td><td style="padding:8px;">${esc(customerName)}</td></tr>
+          <tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">אימייל:</td><td style="padding:8px;">${esc(customerEmail)}</td></tr>
+          <tr><td style="padding:8px; font-weight:bold;">שירות:</td><td style="padding:8px;">${esc(serviceType)}</td></tr>
+          ${packageName ? `<tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">חבילה:</td><td style="padding:8px;">${esc(packageName)}</td></tr>` : ''}
           <tr><td style="padding:8px; font-weight:bold;">סכום:</td><td style="padding:8px; color:#22c55e; font-size:18px; font-weight:bold;">₪${amount}</td></tr>
           <tr style="background:#f9f9f9;"><td style="padding:8px; font-weight:bold;">תאריך:</td><td style="padding:8px;">${date}</td></tr>
-          ${paymentRef ? `<tr><td style="padding:8px; font-weight:bold;">מזהה תשלום:</td><td style="padding:8px;">${paymentRef}</td></tr>` : ''}
+          ${paymentRef ? `<tr><td style="padding:8px; font-weight:bold;">מזהה תשלום:</td><td style="padding:8px;">${esc(paymentRef)}</td></tr>` : ''}
         </table>
       </div>
     `,
@@ -116,12 +124,12 @@ export async function sendPaymentConfirmationEmails(data: {
     subject: `קיבלנו את התשלום שלך ✓`,
     html: `
       <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #6366f1;">תודה על התשלום, ${customerName}! 🎉</h2>
+        <h2 style="color: #6366f1;">תודה על התשלום, ${esc(customerName)}! 🎉</h2>
         <p>אישרנו את התשלום שלך בהצלחה.</p>
         <div style="background:#f0f9ff; padding:20px; border-radius:8px; margin:20px 0;">
           <h3 style="margin:0 0 10px;">סיכום הזמנה</h3>
-          <p><strong>שירות:</strong> ${serviceType}</p>
-          ${packageName ? `<p><strong>חבילה:</strong> ${packageName}</p>` : ''}
+          <p><strong>שירות:</strong> ${esc(serviceType)}</p>
+          ${packageName ? `<p><strong>חבילה:</strong> ${esc(packageName)}</p>` : ''}
           <p><strong>סכום ששולם:</strong> <span style="color:#22c55e; font-weight:bold;">₪${amount}</span></p>
           <p><strong>תאריך:</strong> ${date}</p>
         </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
+import { requireSyncKey } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -22,8 +23,7 @@ const MAX_SESSIONS = 30;
 const MAX_MESSAGES = 120;
 
 function authOk(req: NextRequest) {
-  const syncKey = process.env.MENTOR_SYNC_KEY;
-  return !!syncKey && req.headers.get('x-sync-key') === syncKey;
+  return requireSyncKey(req);
 }
 
 function shortHash(token: string): string {

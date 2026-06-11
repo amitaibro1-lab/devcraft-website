@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findCouponByToken } from '@/lib/coupons-db';
+import { rateLimit, clientIp } from '@/lib/ratelimit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ token: string }> },
 ) {
+  // Public page keyed by a secret token — brake brute-force attempts.
+  const rl = await rateLimit(`creator:${clientIp(req)}`, 20, 3600);
+  if (!rl.ok) {
+    return NextResponse.json({ error: 'יותר מדי בקשות' }, { status: 429 });
+  }
+
   const { token } = await params;
   const coupon = await findCouponByToken(token);
   if (!coupon) {

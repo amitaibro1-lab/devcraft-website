@@ -23,3 +23,14 @@ export function requireAdmin(req: NextRequest): boolean {
   if (!correct || !provided) return false;
   return safeEqual(provided, correct);
 }
+
+/**
+ * Verifies the shared `x-sync-key` header used by the sibling ai-mentor app.
+ * Fails closed when MENTOR_SYNC_KEY is missing.
+ */
+export function requireSyncKey(req: NextRequest): boolean {
+  const provided = (req.headers.get('x-sync-key') ?? '').trim();
+  const correct = (process.env.MENTOR_SYNC_KEY ?? '').trim();
+  if (!correct || !provided) return false;
+  return safeEqual(provided, correct);
+}
