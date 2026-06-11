@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { getSubscribers, saveSubscribers } from '@/lib/mentor-db';
-import { verifyGrowWebhook, planFromAmount } from '@/lib/grow';
+import { verifyGrowWebhook, planFromAmount, resolvePlanFromAmount } from '@/lib/grow';
 import { consumePending, recordRedemption } from '@/lib/coupons-db';
 import { sendMentorAccessEmail } from '@/lib/mailer';
 import { rateLimit, clientIp } from '@/lib/ratelimit';
@@ -64,9 +64,47 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  const plan = planFromAmount(amount);
+  // Exact amount → (plan, duration); annual sums get a full year. Unknown
+  // amounts fall back to the legacy heuristic + 30 days, logged loudly.
+  const resolved = resolvePlanFromAmount(amount);
+  const plan = resolved?.plan ?? planFromAmount(amount);
+  const days = resolved?.days ?? 30;
+  if (!resolved) logEvent(reqId, 'webhook_unknown_amount', { amount, fallbackPlan: plan });
+
+  // Renewal / upgrade: an existing subscriber (same email) keeps their token —
+  // history and progress survive; expiry extends from max(now, current expiry).
+  const emailNorm = customerEmail.toLowerCase().trim();
+  const existing = subscribers.find((s) => s.email.toLowerCase().trim() === emailNorm);
+  if (existing) {
+    const baseTime = Math.max(Date.now(), new Date(existing.expiresAt).getTime() || 0);
+    existing.expiresAt = new Date(baseTime + days * 24 * 60 * 60 * 1000).toISOString();
+    existing.plan = plan;
+    existing.active = true;
+    existing.transactionId = transactionId;
+    await saveSubscribers(subscribers);
+
+    try {
+      const couponCode = await consumePending(customerEmail);
+      if (couponCode) {
+        await recordRedemption(couponCode, amount);
+        logEvent(reqId, 'coupon_redeemed', { plan, amount });
+      }
+    } catch (err) {
+      console.error('coupon redemption tracking failed:', err);
+    }
+
+    await appendAudit({
+      action: 'subscriber_renewed',
+      emailMasked: maskEmail(customerEmail),
+      tokenLast4: tokenLast4(existing.token),
+      details: `plan=${plan} amount=${amount} days=${days}`,
+    });
+    logEvent(reqId, 'webhook_subscription_extended', { plan, amount, days });
+    return NextResponse.json({ ok: true });
+  }
+
   const token = randomUUID();
-  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 
   const subscriber = {
     token,

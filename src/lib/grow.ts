@@ -53,9 +53,36 @@ export function verifyGrowWebhook(webhookKey: string): boolean {
   return webhookKey === expected;
 }
 
-// Determine plan name from payment amount
+// Determine plan name from payment amount.
+// LEGACY fallback only — wrong for annual sums (441 ⇒ "Business"). Prefer
+// resolvePlanFromAmount() which also returns the correct duration.
 export function planFromAmount(amount: number): string {
   if (amount >= 199) return 'Business';
   if (amount >= 99) return 'Pro';
   return 'Starter';
+}
+
+export interface ResolvedPlan {
+  plan: string;
+  days: number;
+  period: 'monthly' | 'annual';
+}
+
+// Exact price → (plan, duration) mapping. Monthly gets a 5-day grace buffer,
+// annual gets 370 days. Must stay in sync with the mentor pricing
+// (49/99/199 monthly; 441/844/1592 annual).
+const PRICE_TABLE: (ResolvedPlan & { amount: number })[] = [
+  { amount: 49, plan: 'Starter', days: 35, period: 'monthly' },
+  { amount: 99, plan: 'Pro', days: 35, period: 'monthly' },
+  { amount: 199, plan: 'Business', days: 35, period: 'monthly' },
+  { amount: 441, plan: 'Starter', days: 370, period: 'annual' },
+  { amount: 844, plan: 'Pro', days: 370, period: 'annual' },
+  { amount: 1592, plan: 'Business', days: 370, period: 'annual' },
+];
+
+// ±1 ₪ tolerance for rounding. Returns null for unknown amounts (e.g. coupon
+// discounts) — callers fall back to planFromAmount with a warning log.
+export function resolvePlanFromAmount(amount: number): ResolvedPlan | null {
+  const row = PRICE_TABLE.find((r) => Math.abs(amount - r.amount) <= 1);
+  return row ? { plan: row.plan, days: row.days, period: row.period } : null;
 }
