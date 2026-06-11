@@ -11,6 +11,7 @@ interface Coupon {
   createdAt: string;
   redemptions: number;
   revenue: number;
+  creatorToken?: string;
 }
 
 interface Props {
@@ -27,6 +28,7 @@ export default function CouponsManager({ password }: Props) {
   const [error, setError] = useState('');
   const [creating, setCreating] = useState(false);
   const [copied, setCopied] = useState('');
+  const [copiedDashboard, setCopiedDashboard] = useState('');
 
   function adminHeaders(json = false) {
     const h: Record<string, string> = { 'x-admin-password': passwordRef.current };
@@ -98,6 +100,13 @@ export default function CouponsManager({ password }: Props) {
     navigator.clipboard.writeText(link);
     setCopied(code);
     setTimeout(() => setCopied(''), 2000);
+  };
+
+  const copyDashboardLink = (token: string) => {
+    const link = `${baseUrl}/creator/${token}`;
+    navigator.clipboard.writeText(link);
+    setCopiedDashboard(token);
+    setTimeout(() => setCopiedDashboard(''), 2000);
   };
 
   const totalRedemptions = coupons.reduce((s, c) => s + c.redemptions, 0);
@@ -226,10 +235,19 @@ export default function CouponsManager({ password }: Props) {
                 <button
                   onClick={() => copyLink(c.code)}
                   className="text-xs bg-white/5 hover:bg-white/10 text-slate-300 px-2 py-1.5 rounded-lg transition-colors"
-                  title="העתק קישור מעקב"
+                  title="העתק קישור מעקב לקהל"
                 >
                   {copied === c.code ? '✓ הועתק' : '🔗 קישור'}
                 </button>
+                {c.creatorToken && (
+                  <button
+                    onClick={() => copyDashboardLink(c.creatorToken!)}
+                    className="text-xs bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 px-2 py-1.5 rounded-lg transition-colors"
+                    title="העתק קישור דשבורד ליוצר"
+                  >
+                    {copiedDashboard === c.creatorToken ? '✓ הועתק' : '📊 דשבורד יוצר'}
+                  </button>
+                )}
                 <button
                   onClick={() => toggleActive(c.code, !c.active)}
                   className={`text-xs px-2 py-1.5 rounded-lg transition-colors ${

@@ -102,7 +102,7 @@ function LoginScreen({ onLogin }: { onLogin: (password: string) => void }) {
         <div className="text-center mb-6">
           <div className="text-4xl mb-3">🔐</div>
           <h1 className="text-2xl font-bold text-white">כניסה לדשבורד</h1>
-          <p className="text-slate-400 text-sm mt-1">AmitaiCraft Admin</p>
+          <p className="text-slate-400 text-sm mt-1">learnyai Admin</p>
         </div>
         <form onSubmit={handleLogin} className="space-y-4">
           <input
@@ -259,7 +259,7 @@ export default function DashboardPage() {
         }`}
       >
         <div className="p-5 border-b border-white/10">
-          <h1 className="text-xl font-bold gradient-text">AmitaiCraft</h1>
+          <h1 className="text-xl font-bold gradient-text">learnyai</h1>
           <p className="text-xs text-slate-500 mt-0.5">Admin Dashboard</p>
         </div>
         <nav className="flex-1 overflow-y-auto p-3 space-y-1">

@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
     createdAt: new Date().toISOString(),
     redemptions: 0,
     revenue: 0,
+    creatorToken: crypto.randomUUID(),
   };
 
   await addCoupon(coupon);

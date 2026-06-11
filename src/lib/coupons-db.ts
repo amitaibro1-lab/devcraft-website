@@ -15,6 +15,7 @@ export interface Coupon {
   createdAt: string;
   redemptions: number;       // count of confirmed purchases
   revenue: number;           // sum of amounts actually paid through this coupon
+  creatorToken?: string;     // secret token for the creator's own dashboard URL
 }
 
 // Written at create-payment, finalized at the webhook (matched by email).
@@ -122,6 +123,13 @@ export async function consumePending(email: string): Promise<string | null> {
   const [match] = list.splice(idx, 1);
   await savePending(list);
   return match.code;
+}
+
+// Find a coupon by its creator dashboard token (used by the creator-facing page).
+export async function findCouponByToken(token: string): Promise<Coupon | undefined> {
+  if (!token) return undefined;
+  const list = await getCoupons();
+  return list.find((c) => c.creatorToken === token);
 }
 
 // Increment a coupon's redemption count + revenue. Best-effort; never throws on
