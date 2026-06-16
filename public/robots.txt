@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Private / non-indexable areas
+Disallow: /dashboard
+Disallow: /creator/
+Disallow: /api/
+
+Sitemap: https://www.learnyai.app/sitemap.xml
